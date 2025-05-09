@@ -1,0 +1,87 @@
+<div class="container">
+    <div class="employees">
+      <p-table
+        [value]="employees"
+        [paginator]="true"
+        [rows]="10"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        scrollable="true"
+      >
+        <!-- Header -->
+        <ng-template pTemplate="header">
+          <tr>
+            <ng-container *ngFor="let col of columns">
+              <th
+                *ngIf="!col.roles || col.roles.includes(role)"
+                [style.width]="col.width"
+              >
+                {{ col.header }}
+              </th>
+            </ng-container>
+          </tr>
+        </ng-template>
+  
+        <!-- Body -->
+        <ng-template pTemplate="body" let-employees>
+          <tr (click)="router.navigate(['/employeesPage', employees.id])" class="employee-tr">
+            <ng-container *ngFor="let col of columns">
+              <td
+                *ngIf="!col.roles || col.roles.includes(role)"
+                [style.width]="col.width"
+              >
+                <ng-container [ngSwitch]="col.field">
+  
+                  <!-- Avatar -->
+                  <img
+                    *ngSwitchCase="'avatarUrl'"
+                    [src]="employees.avatarUrl"
+                    alt="Avatar"
+                    class="avatar"
+                  />
+  
+                  <!-- Name -->
+                  <span *ngSwitchCase="'lastName'">
+                    {{ fullName(employees) }}
+                  </span>
+  
+                  <!-- Status -->
+                  <p-tag
+                    *ngSwitchCase="'status'"
+                    [value]="employees.status"
+                    [severity]="
+                      employees.status === 'active'
+                        ? 'success'
+                        : employees.status === 'inactive'
+                        ? 'danger'
+                        : 'warning'
+                    "
+                  ></p-tag>
+  
+                  <!-- Datum -->
+                  <span *ngSwitchCase="'startDate'">
+                    {{ employees.startDate | date : 'dd.MM.yyyy' }}
+                  </span>
+                  <span *ngSwitchCase="'nextReviewDate'">
+                    {{ employees.nextReviewDate | date : 'dd.MM.yyyy' }}
+                  </span>
+
+                  <button *ngIf="col.field==='actions'" pButton type="button" icon="pi pi-eye"
+                  class="p-button-text p-button-sm"
+                  (click)="router.navigate(['/employeesPage', employees.id]); $event.stopPropagation()"
+                  pTooltip="Details"></button>
+  
+                  <!-- Standard -->
+                  <span *ngSwitchDefault>
+                    {{ employees[col.field] }}
+                  </span>
+  
+                </ng-container>
+              </td>
+            </ng-container>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+  

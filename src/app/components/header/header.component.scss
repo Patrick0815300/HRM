@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: solid 1px rgb(226, 226, 226);
+
+    .right-header {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+}
+
+.user {
+    img {
+        border-radius: 99999px;
+        width: 60px;
+    }
+}

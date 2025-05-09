@@ -1,0 +1,8 @@
+<div class="container">
+    <div class="option-container" *ngFor="let option of menuOptions">
+        <a class="menu-option" [routerLink]="option.route">
+            <mat-icon>{{ option.icon }}</mat-icon>
+            <span class="option-title">{{ option.title }}</span>
+        </a>
+    </div>
+</div>

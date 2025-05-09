@@ -1,0 +1,94 @@
+<div class="container">
+    <p-fieldset [toggleable]="true">
+        <ng-template #header>
+            <div class="flex items-center gap-2 px-2">
+                <p-avatar 
+                    icon="pi pi-user"
+                    shape="circle" />
+                <span class="font-bold">Personal</span>
+            </div>
+        </ng-template>
+
+        <button
+            *ngIf="userRole === 'hr_manager' || userRole === 'admin'"
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            class="fixed bottom-4 right-4 rounded-full p-4 shadow-lg bg-blue-600 text-white hover:bg-blue-700"
+            (click)="enterEditMode()">
+        </button>
+
+        <div *ngIf="editMode" class="card">
+            <p-toast />
+            <p-fileupload name="avatar[]" url="" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000" mode="advanced">
+                <ng-template #empty>
+                    <div>Drag and drop files to here to upload.</div>
+                </ng-template>
+                <ng-template #content>
+                    <ul *ngIf="uploadedFiles.length">
+                        <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                    </ul>
+                </ng-template>
+            </p-fileupload>
+        </div>
+        
+        <div class="table">
+            <p><strong>Vorname:</strong> {{ employee.firstName }}</p>
+            <p><strong>Nachname:</strong> {{ employee.lastName }}</p>
+            <p><strong>Prefered Name:</strong> {{ employee.firstName }}</p>
+            <p><strong>Geburtstag:</strong> {{ '' }}</p>
+            <p><strong>E-Mail:</strong> {{ employee.workEmail }}</p>
+            <p><strong>Phone:</strong> {{ employee.phone }}</p>
+            <p><strong>Location (City, Country):</strong> {{ '' }}</p>
+        </div>
+
+    </p-fieldset>
+    
+    <p-fieldset [toggleable]="true">
+        <ng-template #header>
+            <div class="flex items-center gap-2 px-2">
+                <p-avatar 
+                    icon="pi pi-briefcase"
+                    shape="circle" />
+                <span class="font-bold">Job</span>
+            </div>
+        </ng-template>
+        
+        <div class="table">
+            <p><strong>Job Title:</strong> {{ employee.jobTitle }}</p>
+            <p><strong>Department / Team:</strong> {{ employee.departmentName }}</p>
+            <p><strong>Manager:</strong> {{ '' }}</p>
+            <p><strong>Start Date:</strong> {{ employee.startDate }}</p>
+            <p><strong>Status:</strong>
+                <p-tag
+                    [value]="employee.status"
+                    [severity]="
+                        employee.status === 'active'   ? 'success' :
+                        employee.status === 'on_leave'  ? 'warn' :
+                        employee.status === 'terminated' ? 'danger'  :
+                        'info'
+                    ">
+                </p-tag>
+        </div>
+
+    </p-fieldset>
+
+    <p-fieldset [toggleable]="true">
+        <ng-template #header>
+            <div class="flex items-center gap-2 px-2">
+                <p-avatar 
+                    icon="pi pi-file"
+                    shape="circle" />
+                <span class="font-bold">Contract</span>
+            </div>
+        </ng-template>
+        
+        <div class="table">
+            <p><strong>Contract Type</strong> {{ employee.contractType }}</p>
+            <p><strong>Employment Type:</strong> {{ employee.employmentType }}</p>
+            <p><strong>Weekly Hours:</strong> {{ employee.weeklyHours }}</p>
+            <p><strong>Salery Band:</strong> {{ employee.salaryBand }}</p>
+        </div>
+
+    </p-fieldset>
+</div>

@@ -1,0 +1,32 @@
+<div class="container">
+    <ng-container *ngIf="employee; else loading">
+        <div class="employee-header">
+            <img [src]="employee.avatarUrl" alt="Avatar von {{ employee.firstName }}">
+            <h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
+        </div>
+        <p-tabs [(value)]="selectedTab" [lazy]="true">
+            <p-tablist>
+              <p-tab [value]="0">Profil</p-tab>
+              <p-tab [value]="1">Dokumente</p-tab>
+            </p-tablist>
+          
+            <p-tabpanels>
+              <!-- Profil-Tab -->
+              <p-tabpanel [value]="0">
+                <app-profile [employee]="employee"></app-profile>
+              </p-tabpanel>
+          
+              <!-- Dokumente-Tab -->
+              <p-tabpanel [value]="1">
+                <!-- <app-documents></app-documents> -->
+              </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </ng-container>
+
+    <ng-template #loading>
+        <p-progressSpinner></p-progressSpinner>
+    </ng-template>
+
+</div>
+
