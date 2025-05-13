@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Employee } from '../../../../../shared/models/employee.model';
+import { ContractType, Employee, EmployeeStatus, EmploymentType, SalaryBand } from '../../../../../shared/models/employee.model';
 import { FieldsetModule } from 'primeng/fieldset';
 import { CommonModule } from '@angular/common';
 import { AvatarModule } from 'primeng/avatar';
@@ -10,7 +10,10 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HttpClientModule } from '@angular/common/http';
-
+import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +26,11 @@ import { HttpClientModule } from '@angular/common/http';
     ButtonModule,
     FileUploadModule,
     ToastModule,
-    HttpClientModule
+    HttpClientModule,
+    InputTextModule,
+    FormsModule,
+    DatePickerModule,
+    SelectModule
   ],
   providers: [MessageService],
   templateUrl: './profile.component.html',
@@ -32,19 +39,86 @@ import { HttpClientModule } from '@angular/common/http';
 export class ProfileComponent implements OnInit {
   @Input() employee!: Employee
   userRole: string = 'admin';
-  editMode: boolean = false;
+  editModeProfile: boolean = false;
+  editModeJob: boolean = false;
+  editModeContract: boolean = false;
   uploadedFiles: any[] = [];
+  statusOptions!: { label: string; value: EmployeeStatus }[];
+  contractTypes!: { label: string; value: ContractType }[];
+  employmentType!: { label: string; value: EmploymentType }[];
+  saleryBand!: { label: string; value: SalaryBand }[];
 
   constructor(private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.statusOptions = [
+      { label: 'Active', value: 'active' },
+      { label: 'On Leave', value: 'on_leave' },
+      { label: 'Terminated', value: 'terminated' }
+    ];
+
+    this.contractTypes = [
+      { label: 'Permanent', value: 'permanent' },
+      { label: 'Fixed', value: 'fixed_term' },
+      { label: 'Intership', value: 'internship' },
+      { label: 'Temporary', value: 'temporary' }
+    ];
+
+    this.employmentType = [
+      { label: 'Vollzeit', value: 'full_time' },
+      { label: 'Teilzeit', value: 'part_time' },
+    ];
+
+    this.saleryBand = [
+      { label: 'A', value: 'A' },
+      { label: 'B', value: 'B' },
+      { label: 'C', value: 'C' },
+      { label: 'D', value: 'D' }
+    ];
+
   }
 
-  enterEditMode() {
-    this.editMode = !this.editMode
-    console.log(this.editMode);
-
+  enterProfileEditMode() {
+    this.editModeProfile = true;
   }
+
+  cancelProfileEdit() {
+    this.editModeProfile = false;
+  }
+
+  saveProfileEmployee() {
+    this.editModeProfile = false;
+    // Servicefunktion fehlt noch
+  }
+
+
+  enterJobEditMode() {
+    this.editModeJob = true;
+  }
+
+  cancelJobEdit() {
+    this.editModeJob = false;
+  }
+
+  saveJobEmployee() {
+    this.editModeJob = false;
+    // Servicefunktion fehlt noch
+  }
+
+
+  enterContractEditMode() {
+    this.editModeContract = true;
+  }
+
+  cancelContractEdit() {
+    this.editModeContract = false;
+  }
+
+  saveContractEmployee() {
+    this.editModeContract = false;
+    // Servicefunktion fehlt noch
+  }
+
 
   onUpload(event: any) {
     for (let file of event.files) {

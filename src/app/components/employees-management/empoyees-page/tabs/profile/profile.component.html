@@ -10,15 +10,15 @@
         </ng-template>
 
         <button
-            *ngIf="userRole === 'hr_manager' || userRole === 'admin'"
+            *ngIf="userRole === 'hr_manager' || userRole === 'admin' && !editModeProfile"
             pButton
             type="button"
             icon="pi pi-pencil"
             class="fixed bottom-4 right-4 rounded-full p-4 shadow-lg bg-blue-600 text-white hover:bg-blue-700"
-            (click)="enterEditMode()">
+            (click)="enterProfileEditMode()">
         </button>
 
-        <div *ngIf="editMode" class="card">
+        <div *ngIf="editModeProfile" class="card">
             <p-toast />
             <p-fileupload name="avatar[]" url="" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000" mode="advanced">
                 <ng-template #empty>
@@ -32,7 +32,8 @@
             </p-fileupload>
         </div>
         
-        <div class="table">
+        <!-- View-Mode -->
+        <div *ngIf="!editModeProfile" class="card p-4">
             <p><strong>Vorname:</strong> {{ employee.firstName }}</p>
             <p><strong>Nachname:</strong> {{ employee.lastName }}</p>
             <p><strong>Prefered Name:</strong> {{ employee.firstName }}</p>
@@ -41,6 +42,91 @@
             <p><strong>Phone:</strong> {{ employee.phone }}</p>
             <p><strong>Location (City, Country):</strong> {{ '' }}</p>
         </div>
+
+        <!-- Edit-Mode -->
+        <div *ngIf="editModeProfile" class="card p-4">
+
+            <!-- Vorname -->
+            <div class="field">
+              <label for="firstName"><strong>Vorname:</strong></label>
+              <input
+                id="firstName"
+                type="text"
+                pInputText
+                [(ngModel)]="employee.firstName" />
+            </div>
+          
+            <!-- Nachname -->
+            <div class="field">
+              <label for="lastName"><strong>Nachname:</strong></label>
+              <input
+                id="lastName"
+                type="text"
+                pInputText
+                [(ngModel)]="employee.lastName" />
+            </div>
+          
+            <!-- Preferred Name -->
+            <div class="field">
+              <label for="preferredName"><strong>Preferred Name:</strong></label>
+              <input
+                id="preferredName"
+                type="text"
+                pInputText
+                [(ngModel)]="employee.preferredName" />
+            </div>
+          
+            <!-- Geburtstag -->
+            <div class="field">
+              <label for="birthDate"><strong>Geburtstag:</strong></label>
+              <p-datepicker
+                id="birthDate"
+                [(ngModel)]="employee.birthDate"
+                dateFormat="yy-MM-dd"
+                showIcon="true">
+              </p-datepicker>
+            </div>
+          
+            <!-- E-Mail -->
+            <div class="field">
+              <label for="workEmail"><strong>E-Mail:</strong></label>
+              <input
+                id="workEmail"
+                type="email"
+                pInputText
+                [(ngModel)]="employee.workEmail" />
+            </div>
+          
+            <!-- Phone -->
+            <div class="field">
+              <label for="phone"><strong>Phone:</strong></label>
+              <input
+                id="phone"
+                type="text"
+                pInputText
+                [(ngModel)]="employee.phone" />
+            </div>
+          
+            <!-- Location -->
+            <!-- <div class="field">
+              <label for="location"><strong>Location (City, Country):</strong></label>
+              <input
+                id="location"
+                type="text"
+                pInputText
+                [(ngModel)]="employee.location" />
+            </div> -->
+          
+            <div class="flex justify-content-end mt-4 gap-2">
+                <button pButton type="button" label="Abbrechen" icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="cancelProfileEdit()"></button>
+                <button pButton type="button" label="Speichern" icon="pi pi-check"
+                        (click)="saveProfileEmployee()"></button>
+            </div>
+          </div>
+          
+
 
     </p-fieldset>
     
@@ -53,8 +139,18 @@
                 <span class="font-bold">Job</span>
             </div>
         </ng-template>
+
+        <button
+            *ngIf="userRole === 'hr_manager' || userRole === 'admin' && !editModeJob"
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            class="fixed bottom-4 right-4 rounded-full p-4 shadow-lg bg-blue-600 text-white hover:bg-blue-700"
+            (click)="enterJobEditMode()">
+        </button>
         
-        <div class="table">
+        <!-- View Mode -->
+        <div *ngIf="!editModeJob" class="card p-4">
             <p><strong>Job Title:</strong> {{ employee.jobTitle }}</p>
             <p><strong>Department / Team:</strong> {{ employee.departmentName }}</p>
             <p><strong>Manager:</strong> {{ '' }}</p>
@@ -71,6 +167,73 @@
                 </p-tag>
         </div>
 
+        <!-- Edit Mode -->
+        <div *ngIf="editModeJob" class="card p-4">
+            <!-- Job Title -->
+            <div class="field">
+                <label for="jobTitle"><strong>Job Title:</strong></label>
+                <input
+                  id="jobTitle"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="employee.jobTitle" />
+            </div>
+
+            <!-- Department Name -->
+            <div class="field">
+                <label for="departmentName"><strong>Department/Team:</strong></label>
+                <input
+                  id="departmentName"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="employee.departmentName" />
+            </div>
+
+            <!-- Manager ID -->
+            <div class="field">
+                <label for="manager"><strong>Manager:</strong></label>
+                <input
+                  id="manager"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="employee.managerId" />
+            </div>
+               
+            <!-- Start Date -->
+            <div class="field">
+                <label for="startDate"><strong>Start Date:</strong></label>
+                <p-datepicker
+                    id="startDate"
+                    name="startDate"
+                    [(ngModel)]="employee.startDate"
+                    dateFormat="yy-MM-dd"
+                    showIcon="true"
+                    >
+                </p-datepicker>
+            </div>
+
+            <!-- Status -->
+            <div class="card flex justify-center">
+                <p-select 
+                    [options]="statusOptions" 
+                    [(ngModel)]="employee.status" 
+                    optionLabel="label" 
+                    optionValue="value"
+                    placeholder="Select a Status" 
+                    class="w-full md:w-56" 
+                />
+            </div>
+
+            <div class="flex justify-content-end mt-4 gap-2">
+                <button pButton type="button" label="Abbrechen" icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="cancelJobEdit()"></button>
+                <button pButton type="button" label="Speichern" icon="pi pi-check"
+                        (click)="saveJobEmployee()"></button>
+            </div>
+        </div>
+
+
     </p-fieldset>
 
     <p-fieldset [toggleable]="true">
@@ -82,12 +245,78 @@
                 <span class="font-bold">Contract</span>
             </div>
         </ng-template>
-        
-        <div class="table">
+
+        <button
+            *ngIf="userRole === 'hr_manager' || userRole === 'admin' && !editModeContract"
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            class="fixed bottom-4 right-4 rounded-full p-4 shadow-lg bg-blue-600 text-white hover:bg-blue-700"
+            (click)="enterContractEditMode()">
+        </button>
+
+        <!-- View Mode -->
+        <div *ngIf="!editModeContract" class="table">
             <p><strong>Contract Type</strong> {{ employee.contractType }}</p>
             <p><strong>Employment Type:</strong> {{ employee.employmentType }}</p>
             <p><strong>Weekly Hours:</strong> {{ employee.weeklyHours }}</p>
             <p><strong>Salery Band:</strong> {{ employee.salaryBand }}</p>
+        </div>
+
+        <div *ngIf="editModeContract" class="card p-4">
+            <!-- Contract Type -->
+            <div class="card flex justify-center">
+                <p-select 
+                    [options]="contractTypes" 
+                    [(ngModel)]="employee.contractType" 
+                    optionLabel="label" 
+                    optionValue="value"
+                    placeholder="Select a Status" 
+                    class="w-full md:w-56" 
+                />
+            </div>
+
+            <!-- Employment Type -->
+            <div class="card flex justify-center">
+                <p-select 
+                    [options]="employmentType" 
+                    [(ngModel)]="employee.employmentType" 
+                    optionLabel="label" 
+                    optionValue="value"
+                    placeholder="Select a Status" 
+                    class="w-full md:w-56" 
+                />
+            </div>
+
+            <!-- Weeklyhours -->
+            <div class="field">
+                <label for="weeklyHours"><strong>Weekly Hours:</strong></label>
+                <input
+                  id="weeklyHours"
+                  type="number"
+                  pInputText
+                  [(ngModel)]="employee.weeklyHours" />
+            </div>
+
+            <!-- Salery Band -->
+            <div class="card flex justify-center">
+                <p-select 
+                    [options]="saleryBand" 
+                    [(ngModel)]="employee.salaryBand" 
+                    optionLabel="label" 
+                    optionValue="value"
+                    placeholder="Select a Status" 
+                    class="w-full md:w-56" 
+                />
+            </div>
+
+            <div class="flex justify-content-end mt-4 gap-2">
+                <button pButton type="button" label="Abbrechen" icon="pi pi-times"
+                        class="p-button-text"
+                        (click)="cancelContractEdit()"></button>
+                <button pButton type="button" label="Speichern" icon="pi pi-check"
+                        (click)="saveContractEmployee()"></button>
+            </div>
         </div>
 
     </p-fieldset>
