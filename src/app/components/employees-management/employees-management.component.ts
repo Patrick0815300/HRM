@@ -13,13 +13,14 @@ import { Table } from '../../shared/models/table.model';
 import { ChipModule } from 'primeng/chip';
 import { Router } from '@angular/router';
 import { EmployeesService } from '../../services/supabase/employees.service';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
   selector: 'app-employees-management',
   imports: [TableModule, CommonModule, InputTextModule, TagModule,
     SelectModule, SelectModule, ButtonModule, IconFieldModule, InputIconModule,
-    ChipModule
+    ChipModule, MatIconModule
   ],
   templateUrl: './employees-management.component.html',
   styleUrl: './employees-management.component.scss'
@@ -27,7 +28,6 @@ import { EmployeesService } from '../../services/supabase/employees.service';
 export class EmployeesManagementComponent implements OnInit {
   employees!: Employee[];
   role: string = '';
-
   columns: Table[] = [];
 
   private readonly allColumns: Table[] = [
@@ -60,6 +60,12 @@ export class EmployeesManagementComponent implements OnInit {
     return `${e.lastName}, ${e.firstName}`;
   }
 
+  onRowClick(id: number) {
+    // nur bei <=768px weiterleiten
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      this.router.navigate(['/employeesPage', id]);
+    }
+  }
 
 
 

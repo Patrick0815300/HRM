@@ -88,12 +88,15 @@ export class ProfileComponent implements OnInit {
 
   saveProfileEmployee() {
     this.editModeProfile = false;
+    this.showSaveSuccessToast();
     // Servicefunktion fehlt noch
   }
 
 
   enterJobEditMode() {
     this.editModeJob = true;
+    console.log(this.employee);
+
   }
 
   cancelJobEdit() {
@@ -102,6 +105,9 @@ export class ProfileComponent implements OnInit {
 
   saveJobEmployee() {
     this.editModeJob = false;
+    console.log(this.employee);
+
+    //this.showSaveSuccessToast();
     // Servicefunktion fehlt noch
   }
 
@@ -116,6 +122,7 @@ export class ProfileComponent implements OnInit {
 
   saveContractEmployee() {
     this.editModeContract = false;
+    this.showSaveSuccessToast();
     // Servicefunktion fehlt noch
   }
 
@@ -124,14 +131,24 @@ export class ProfileComponent implements OnInit {
     for (let file of event.files) {
       this.uploadedFiles.push(file);
       this.messageService.add({
+        key: 'upload',
         severity: 'info',
         summary: 'Upload erfolgreich',
         detail: `${event.files.length} Datei(en) hochgeladen`
       });
-
     }
+    //thi
+    // 
+    // .messageService.add({ severity: 'info', summary: 'File Uploaded', detail: '' });
+  }
 
-    //this.messageService.add({ severity: 'info', summary: 'File Uploaded', detail: '' });
+  showSaveSuccessToast() {
+    this.messageService.add({
+      key: 'saveSuccess',
+      severity: 'success',
+      summary: 'Gespeichert',
+      detail: 'Ihre Änderungen wurden erfolgreich übernommen.'
+    });
   }
 
 }

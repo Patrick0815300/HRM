@@ -6,6 +6,7 @@ import { TabsModule } from 'primeng/tabs';
 import { ProfileComponent } from './tabs/profile/profile.component';
 import { CommonModule } from '@angular/common';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-empoyees-page',
@@ -13,7 +14,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     TabsModule,
     ProfileComponent,
     CommonModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    MatIconModule
   ],
   templateUrl: './empoyees-page.component.html',
   styleUrl: './empoyees-page.component.scss'

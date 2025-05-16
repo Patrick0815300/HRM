@@ -1,5 +1,6 @@
 <div class="container">
-    <p-fieldset [toggleable]="true">
+    <p-toast key="saveSuccess"/>
+    <p-fieldset [toggleable]="true" [collapsed]="true">
         <ng-template #header>
             <div class="flex items-center gap-2 px-2">
                 <p-avatar 
@@ -19,7 +20,7 @@
         </button>
 
         <div *ngIf="editModeProfile" class="card">
-            <p-toast />
+            <p-toast key="upload"/>
             <p-fileupload name="avatar[]" url="" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000" mode="advanced">
                 <ng-template #empty>
                     <div>Drag and drop files to here to upload.</div>
@@ -40,7 +41,7 @@
             <p><strong>Geburtstag:</strong> {{ '' }}</p>
             <p><strong>E-Mail:</strong> {{ employee.workEmail }}</p>
             <p><strong>Phone:</strong> {{ employee.phone }}</p>
-            <p><strong>Location (City, Country):</strong> {{ '' }}</p>
+            <p><strong>Location:</strong> {{ employee.zipCode }} {{ employee.city }}, {{ employee.address }}</p>
         </div>
 
         <!-- Edit-Mode -->
@@ -130,7 +131,7 @@
 
     </p-fieldset>
     
-    <p-fieldset [toggleable]="true">
+    <p-fieldset [toggleable]="true" [collapsed]="true">
         <ng-template #header>
             <div class="flex items-center gap-2 px-2">
                 <p-avatar 
@@ -236,7 +237,7 @@
 
     </p-fieldset>
 
-    <p-fieldset [toggleable]="true">
+    <p-fieldset [toggleable]="true" [collapsed]="true">
         <ng-template #header>
             <div class="flex items-center gap-2 px-2">
                 <p-avatar 

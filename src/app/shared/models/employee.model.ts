@@ -34,6 +34,9 @@ export interface Employee {
     lastName: string;
     preferredName?: string;         // e.g. Nickname
     birthDate?: string;             // ISO-8601
+    zipCode?: string;
+    city?: string;
+    address?: string;
 
     /* ─── Contact ─────────────────────────── */
     workEmail: string;

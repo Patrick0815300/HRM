@@ -7,6 +7,7 @@
         [tableStyle]="{ 'min-width': '50rem' }"
         [rowsPerPageOptions]="[10, 25, 50]"
         scrollable="true"
+        stripedRows
       >
         <!-- Header -->
         <ng-template pTemplate="header">
@@ -24,7 +25,7 @@
   
         <!-- Body -->
         <ng-template pTemplate="body" let-employees>
-          <tr (click)="router.navigate(['/employeesPage', employees.id])" class="employee-tr">
+          <tr (click)="onRowClick(employees.id)" class="employee-tr">
             <ng-container *ngFor="let col of columns">
               <td
                 *ngIf="!col.roles || col.roles.includes(role)"
@@ -33,12 +34,19 @@
                 <ng-container [ngSwitch]="col.field">
   
                   <!-- Avatar -->
-                  <img
-                    *ngSwitchCase="'avatarUrl'"
-                    [src]="employees.avatarUrl"
-                    alt="Avatar"
-                    class="avatar"
-                  />
+                  <ng-container *ngSwitchCase="'avatarUrl'">
+                    <ng-container *ngIf="employees.avatarUrl; else defaultAvatar">
+                      <img
+                        [src]="employees.avatarUrl"
+                        alt="Avatar von {{ employees.firstName }}"
+                        class="avatar"
+                      />
+                    </ng-container>
+                    <ng-template #defaultAvatar>
+                      <mat-icon class="avatar-icon">account_circle</mat-icon>
+                    </ng-template>
+                  </ng-container>
+        
   
                   <!-- Name -->
                   <span *ngSwitchCase="'lastName'">

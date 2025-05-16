@@ -1,7 +1,16 @@
 <div class="container">
     <ng-container *ngIf="employee; else loading">
         <div class="employee-header">
-            <img [src]="employee.avatarUrl" alt="Avatar von {{ employee.firstName }}">
+          <ng-container *ngIf="employee.avatarUrl; else defaultAvatar">
+            <img
+              [src]="employee.avatarUrl"
+              alt="Avatar von {{ employee.firstName }}"
+              class="avatar"
+            />
+          </ng-container>
+          <ng-template #defaultAvatar>
+            <mat-icon class="avatar-icon">account_circle</mat-icon>
+          </ng-template>
             <h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
         </div>
         <p-tabs [(value)]="selectedTab" [lazy]="true">
