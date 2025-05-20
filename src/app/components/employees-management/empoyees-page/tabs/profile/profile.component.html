@@ -41,7 +41,7 @@
             <p><strong>Geburtstag:</strong> {{ '' }}</p>
             <p><strong>E-Mail:</strong> {{ employee.workEmail }}</p>
             <p><strong>Phone:</strong> {{ employee.phone }}</p>
-            <p><strong>Location:</strong> {{ employee.zipCode }} {{ employee.city }}, {{ employee.address }}</p>
+            <p><strong>Location:</strong> {{ employee.zipCode }}, {{ employee.city }}, {{ employee.address }}</p>
         </div>
 
         <!-- Edit-Mode -->
@@ -109,14 +109,14 @@
             </div>
           
             <!-- Location -->
-            <!-- <div class="field">
-              <label for="location"><strong>Location (City, Country):</strong></label>
+            <div class="field">
+              <label for="address"><strong>Location:</strong></label>
               <input
-                id="location"
+                id="address"
                 type="text"
                 pInputText
-                [(ngModel)]="employee.location" />
-            </div> -->
+                [(ngModel)]="employee.address" />
+            </div>
           
             <div class="flex justify-content-end mt-4 gap-2">
                 <button pButton type="button" label="Abbrechen" icon="pi pi-times"
@@ -127,8 +127,6 @@
             </div>
           </div>
           
-
-
     </p-fieldset>
     
     <p-fieldset [toggleable]="true" [collapsed]="true">
@@ -264,6 +262,7 @@
             <p><strong>Salery Band:</strong> {{ employee.salaryBand }}</p>
         </div>
 
+        <!-- Edit Mode -->
         <div *ngIf="editModeContract" class="card p-4">
             <!-- Contract Type -->
             <div class="card flex justify-center">

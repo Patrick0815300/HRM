@@ -14,6 +14,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
+import { EmployeesService } from '../../../../../services/supabase/employees.service';
 
 @Component({
   selector: 'app-profile',
@@ -38,6 +39,7 @@ import { SelectModule } from 'primeng/select';
 })
 export class ProfileComponent implements OnInit {
   @Input() employee!: Employee
+  copiedEmployee!: Employee
   userRole: string = 'admin';
   editModeProfile: boolean = false;
   editModeJob: boolean = false;
@@ -48,7 +50,7 @@ export class ProfileComponent implements OnInit {
   employmentType!: { label: string; value: EmploymentType }[];
   saleryBand!: { label: string; value: SalaryBand }[];
 
-  constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService, private employeeService: EmployeesService) { }
 
   ngOnInit(): void {
     this.statusOptions = [
@@ -78,55 +80,76 @@ export class ProfileComponent implements OnInit {
 
   }
 
+  copyEmployeeData() {
+    // Tiefe Kopie (deep copy) erstellen
+    this.copiedEmployee = JSON.parse(JSON.stringify(this.employee));
+  }
+
+  getChangedFields(): Partial<Employee> {
+    const changes = {} as Partial<Employee>;
+    (Object.keys(this.employee) as Array<keyof Employee>).forEach((key) => {
+      if (this.copiedEmployee[key] !== this.employee[key]) {
+        (changes as any)[key] = this.employee[key];
+      }
+    });
+    return changes;
+  }
+
+  saveEmployee() {
+    const changes = this.getChangedFields();
+    if (Object.keys(changes).length === 0) {
+      return;
+    } else {
+      this.employeeService.saveEmployee(changes, this.employee.id);
+      this.showSaveSuccessToast();
+    }
+  }
+
   enterProfileEditMode() {
     this.editModeProfile = true;
+    this.copyEmployeeData();
   }
 
   cancelProfileEdit() {
+    this.employee = JSON.parse(JSON.stringify(this.copiedEmployee));
     this.editModeProfile = false;
   }
 
   saveProfileEmployee() {
     this.editModeProfile = false;
-    this.showSaveSuccessToast();
-    // Servicefunktion fehlt noch
+    this.saveEmployee();
   }
 
 
   enterJobEditMode() {
     this.editModeJob = true;
-    console.log(this.employee);
-
   }
 
   cancelJobEdit() {
+    this.employee = JSON.parse(JSON.stringify(this.copiedEmployee));
     this.editModeJob = false;
   }
 
   saveJobEmployee() {
     this.editModeJob = false;
-    console.log(this.employee);
-
-    //this.showSaveSuccessToast();
-    // Servicefunktion fehlt noch
+    this.saveEmployee();
   }
-
 
   enterContractEditMode() {
     this.editModeContract = true;
   }
 
   cancelContractEdit() {
+    this.employee = JSON.parse(JSON.stringify(this.copiedEmployee));
     this.editModeContract = false;
   }
 
   saveContractEmployee() {
     this.editModeContract = false;
-    this.showSaveSuccessToast();
-    // Servicefunktion fehlt noch
+    this.saveEmployee();
   }
 
-
+  // Upload for change avatar
   onUpload(event: any) {
     for (let file of event.files) {
       this.uploadedFiles.push(file);
