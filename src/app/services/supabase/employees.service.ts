@@ -13,6 +13,10 @@ export class EmployeesService {
   constructor(private clientService: ClientService) {
   }
 
+  signupEmployee(email: string) {
+    this.clientService.signUp(email)
+  }
+
   async getAllEmployeesData(): Promise<Employee[]> {
     const { data: raw, error } = await this.clientService.client
       .from('employees')
@@ -44,6 +48,24 @@ export class EmployeesService {
     return data;
   }
 
+  uploadEmployeeAvatar(employeeId: string, fileName: string, file: File) {
+    const filePath = `${employeeId}/${fileName}`;
+    return this.clientService.client.storage.from('employees-avatar').upload(filePath, file);
+  }
+
+  async addEmployee(employee: Employee) {
+    // Wandelt alle camelCase-Keys in snake_case um
+    const employeeToInsert = snakecaseKeys(employee as unknown as Record<string, unknown>);
+    const { data, error } = await this.clientService.client
+      .from('employees')
+      .insert([employeeToInsert])
+      .select();
+
+    if (error) {
+      console.error('Fehler beim Hinzufügen des Employees:', error.message);
+      throw error;
+    }
+  }
 
 
 

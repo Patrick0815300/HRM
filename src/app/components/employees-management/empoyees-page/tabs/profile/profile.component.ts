@@ -6,7 +6,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { MatIconModule } from '@angular/material/icon';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { HttpClientModule } from '@angular/common/http';
@@ -45,6 +45,7 @@ export class ProfileComponent implements OnInit {
   editModeJob: boolean = false;
   editModeContract: boolean = false;
   uploadedFiles: any[] = [];
+  fileUpload!: FileUpload;
   statusOptions!: { label: string; value: EmployeeStatus }[];
   contractTypes!: { label: string; value: ContractType }[];
   employmentType!: { label: string; value: EmploymentType }[];
@@ -77,7 +78,6 @@ export class ProfileComponent implements OnInit {
       { label: 'C', value: 'C' },
       { label: 'D', value: 'D' }
     ];
-
   }
 
   copyEmployeeData() {
@@ -100,8 +100,10 @@ export class ProfileComponent implements OnInit {
     if (Object.keys(changes).length === 0) {
       return;
     } else {
-      this.employeeService.saveEmployee(changes, this.employee.id);
-      this.showSaveSuccessToast();
+      if (this.employee.id) {
+        this.employeeService.saveEmployee(changes, this.employee.id);
+        this.showSaveSuccessToast();
+      }
     }
   }
 
@@ -123,6 +125,7 @@ export class ProfileComponent implements OnInit {
 
   enterJobEditMode() {
     this.editModeJob = true;
+    this.copyEmployeeData();
   }
 
   cancelJobEdit() {
@@ -137,6 +140,7 @@ export class ProfileComponent implements OnInit {
 
   enterContractEditMode() {
     this.editModeContract = true;
+    this.copyEmployeeData();
   }
 
   cancelContractEdit() {
@@ -149,21 +153,33 @@ export class ProfileComponent implements OnInit {
     this.saveEmployee();
   }
 
-  // Upload for change avatar
-  onUpload(event: any) {
-    for (let file of event.files) {
-      this.uploadedFiles.push(file);
-      this.messageService.add({
-        key: 'upload',
-        severity: 'info',
-        summary: 'Upload erfolgreich',
-        detail: `${event.files.length} Datei(en) hochgeladen`
-      });
+  onUpload(event: any, fileUpload: FileUpload) {
+    if (this.employee.id) {
+      for (let file of event.files) {
+        this.employeeService.uploadEmployeeAvatar(this.employee.id, file.name, file).then(({ error }) => {
+          console.log(this.employee.id, file.name, file);
+
+          if (error) {
+            this.messageService.add({
+              key: 'upload',
+              severity: 'error',
+              summary: 'Fehler beim Hochladen',
+              detail: error.message
+            });
+          } else {
+            this.messageService.add({
+              key: 'upload',
+              severity: 'info',
+              summary: 'Upload erfolgreich',
+              detail: `${file.name} hochgeladen`
+            });
+          }
+        });
+      }
+      event.options.clear();
     }
-    //thi
-    // 
-    // .messageService.add({ severity: 'info', summary: 'File Uploaded', detail: '' });
   }
+
 
   showSaveSuccessToast() {
     this.messageService.add({

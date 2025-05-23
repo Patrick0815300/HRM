@@ -23,10 +23,18 @@ export type EmploymentType =
 /** Optional salary band enumeration */
 export type SalaryBand = 'A' | 'B' | 'C' | 'D';
 
+/** User roles within the HRM system */
+export enum EmployeeRole {
+    HRManager = 'hr_manager',
+    Employee = 'employee',
+    Accounting = 'accounting',
+    SystemAdmin = 'admin'
+}
+
 /** Main Employee interface (syncs 1-to-1 with Supabase `employees` table) */
 export interface Employee {
     /* ─── Identifiers ─────────────────────── */
-    id: string;                     // UUID primary key
+    id?: string;                     // UUID primary key
     userId?: string;                // FK to auth.users (optional for external staff)
 
     /* ─── Personal data ───────────────────── */
@@ -73,5 +81,8 @@ export interface Employee {
     /* ─── Audit ───────────────────────────── */
     createdAt: string;              // timestamptz
     updatedAt: string;
+
+    /* ─── Role & Permissions ──────────────── */
+    role: EmployeeRole; //
 }
 

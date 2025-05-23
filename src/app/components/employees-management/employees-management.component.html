@@ -1,4 +1,75 @@
 <div class="container">
+  <div>
+    <p-button (click)="showDialog()" label="Mitarbeiter hinzufügen" />
+    <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleAddEmployeeDialog" [style]="{ width: '25rem' }">
+      <span class="p-text-secondary block mb-8">Mitarbeiter hinzufügen</span>
+      <p-floatlabel variant="on" class="flex items-center gap-4 mb-4">
+          <label for="firstName" class="font-semibold w-24">Vorname</label>
+          <input pInputText [(ngModel)]="employee.firstName" id="firstName" class="flex-auto" autocomplete="off" />
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="flex items-center gap-4 mb-4">
+        <label for="lastName" class="font-semibold w-24">Nachname</label>
+        <input pInputText [(ngModel)]="employee.lastName" id="lastName" class="flex-auto" autocomplete="off" />
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="flex items-center gap-4 mb-4">
+        <label for="email" class="font-semibold w-24">Privat Email</label>
+        <input pInputText [(ngModel)]="privateEmail" type="email" id="email" class="flex-auto" autocomplete="off" />
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="flex items-center gap-4 mb-4">
+        <label for="jobTitle" class="font-semibold w-24">Job Title</label>
+        <input pInputText [(ngModel)]="employee.jobTitle" id="jobTitle" class="flex-auto" autocomplete="off" />
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="flex items-center gap-4 mb-4">
+        <label for="startDate" class="font-semibold w-24">Start Datum</label>
+        <p-datepicker
+          [ngModel]="employee.startDate ? (employee.startDate | date:'yyyy-MM-dd') : null"
+          (ngModelChange)="onStartDateChange($event)"
+          id="startDate"
+          showIcon
+          iconDisplay="input"
+          dateFormat="yy-mm-dd">
+        </p-datepicker>
+
+      </p-floatlabel>
+
+      <div class="card flex justify-center">
+        <p-select
+            [(ngModel)]="employee.status" 
+            [options]="statusOptions" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select a Status" 
+            class="w-full md:w-56" 
+        />
+      </div>
+      <div class="card flex justify-center">
+        <p-select 
+            [(ngModel)]="employee.employmentType"
+            [options]="employmentType" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select a Employment Type" 
+            class="w-full md:w-56" 
+        />
+      </div>
+      <div class="card flex justify-center">
+        <p-select 
+            [(ngModel)]="employee.contractType"
+            [options]="contractTypes" 
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select a Contract Type" 
+            class="w-full md:w-56" 
+        />
+      </div>
+
+
+      <div class="flex justify-end gap-2">
+          <p-button label="Cancel" severity="secondary" (click)="visibleAddEmployeeDialog = false" />
+          <p-button (onClick)="onSaveEmployee()" label="Save" (click)="visibleAddEmployeeDialog = false" />
+      </div>
+    </p-dialog>
+  </div>
     <div class="employees">
       <p-table
         [value]="employees"
@@ -8,6 +79,8 @@
         [rowsPerPageOptions]="[10, 25, 50]"
         scrollable="true"
         stripedRows
+        sortField="lastName"
+        [sortOrder]="1"
       >
         <!-- Header -->
         <ng-template pTemplate="header">
@@ -16,8 +89,11 @@
               <th
                 *ngIf="!col.roles || col.roles.includes(role)"
                 [style.width]="col.width"
-              >
+                [pSortableColumn]="col.field"
+                [pSortableColumnDisabled]="!col.sortable">
+              
                 {{ col.header }}
+                <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
               </th>
             </ng-container>
           </tr>
@@ -58,11 +134,10 @@
                     *ngSwitchCase="'status'"
                     [value]="employees.status"
                     [severity]="
-                      employees.status === 'active'
-                        ? 'success'
-                        : employees.status === 'inactive'
-                        ? 'danger'
-                        : 'warning'
+                        employees.status === 'active'   ? 'success' :
+                        employees.status === 'on_leave'  ? 'warn' :
+                        employees.status === 'terminated' ? 'danger'  :
+                        'info'
                     "
                   ></p-tag>
   

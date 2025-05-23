@@ -21,7 +21,14 @@
 
         <div *ngIf="editModeProfile" class="card">
             <p-toast key="upload"/>
-            <p-fileupload name="avatar[]" url="" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000" mode="advanced">
+            <p-fileupload 
+                name="avatar[]" 
+                customUpload="true" 
+                (uploadHandler)="onUpload($event, fileUpload)" 
+                [multiple]="true" 
+                accept="image/*" 
+                maxFileSize="2000000" 
+                mode="advanced">
                 <ng-template #empty>
                     <div>Drag and drop files to here to upload.</div>
                 </ng-template>
@@ -38,7 +45,7 @@
             <p><strong>Vorname:</strong> {{ employee.firstName }}</p>
             <p><strong>Nachname:</strong> {{ employee.lastName }}</p>
             <p><strong>Prefered Name:</strong> {{ employee.firstName }}</p>
-            <p><strong>Geburtstag:</strong> {{ '' }}</p>
+            <p dateFormat="yy-MM-dd"><strong>Geburtstag:</strong> {{ employee.birthDate }}</p>
             <p><strong>E-Mail:</strong> {{ employee.workEmail }}</p>
             <p><strong>Phone:</strong> {{ employee.phone }}</p>
             <p><strong>Location:</strong> {{ employee.zipCode }}, {{ employee.city }}, {{ employee.address }}</p>
