@@ -18,13 +18,16 @@ import { DialogModule } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { DatePicker } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-employees-management',
   imports: [TableModule, CommonModule, InputTextModule, TagModule,
     SelectModule, SelectModule, ButtonModule, IconFieldModule, InputIconModule,
-    ChipModule, MatIconModule, DialogModule, FloatLabel, DatePicker, FormsModule
+    ChipModule, MatIconModule, DialogModule, FloatLabel, DatePicker, FormsModule, ToastModule
   ],
+  providers: [MessageService],
   templateUrl: './employees-management.component.html',
   styleUrl: './employees-management.component.scss'
 })
@@ -72,7 +75,7 @@ export class EmployeesManagementComponent implements OnInit {
 
 
 
-  constructor(public router: Router, private employeesService: EmployeesService) { }
+  constructor(public router: Router, private employeesService: EmployeesService, private messageService: MessageService) { }
 
   async ngOnInit(): Promise<void> {
     this.employees = await this.employeesService.getAllEmployeesData();
@@ -99,6 +102,13 @@ export class EmployeesManagementComponent implements OnInit {
     ];
   }
 
+  getSession() {
+    this.employeesService.getSession();
+  }
+
+  addUser(email: string, employee: Employee) {
+    this.employeesService.addUser(email, employee);
+  }
 
   onStartDateChange(date: Date) {
     this.employee.startDate = date ? date.toISOString().substring(0, 10) : '';
@@ -106,9 +116,21 @@ export class EmployeesManagementComponent implements OnInit {
 
   async onSaveEmployee() {
     this.employee.workEmail = this.generateWorkEmail(this.employee.firstName, this.employee.lastName);
-    console.log(this.employee, 'Private Email' + this.privateEmail);
 
-    this.employeesService.addEmployee(this.employee);
+    try {
+      await this.employeesService.createUserAndEmployee(this.privateEmail, this.employee);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Erfolg',
+        detail: 'Mitarbeiter und Benutzer wurden erfolgreich angelegt!'
+      });
+    } catch (error: any) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Fehler',
+        detail: error?.message || 'Es ist ein Fehler aufgetreten.'
+      });
+    }
   }
 
 

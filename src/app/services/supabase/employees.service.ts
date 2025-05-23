@@ -13,8 +13,8 @@ export class EmployeesService {
   constructor(private clientService: ClientService) {
   }
 
-  signupEmployee(email: string) {
-    this.clientService.signUp(email)
+  getSession() {
+    this.clientService.currentUser();
   }
 
   async getAllEmployeesData(): Promise<Employee[]> {
@@ -53,20 +53,50 @@ export class EmployeesService {
     return this.clientService.client.storage.from('employees-avatar').upload(filePath, file);
   }
 
-  async addEmployee(employee: Employee) {
-    // Wandelt alle camelCase-Keys in snake_case um
-    const employeeToInsert = snakecaseKeys(employee as unknown as Record<string, unknown>);
-    const { data, error } = await this.clientService.client
-      .from('employees')
-      .insert([employeeToInsert])
-      .select();
-
-    if (error) {
-      console.error('Fehler beim Hinzufügen des Employees:', error.message);
-      throw error;
-    }
+  async createUserAndEmployee(email: string, employee: Employee) {
+    const userId = await this.addUser(email, employee);
+    return await this.addEmployee(employee, userId!);
   }
 
+  async addEmployee(employee: Employee, userId: string) {
+    const employeeToInsert = {
+      ...employee,
+      user_id: userId,
+    };
+    const { data, error } = await this.clientService.client
+      .from('employees')
+      .insert([snakecaseKeys(employeeToInsert)])
+      .select();
+    if (error) throw error;
+    return data?.[0];
+  }
+
+
+  async addUser(email: string, employee: Employee) {
+    const { data, error } = await this.clientService.client.auth.signUp({
+      email,
+      password: 'Password123',
+      options: {
+        data: {
+          first_name: employee.firstName,
+          last_name: employee.lastName
+        }
+      }
+    });
+    if (error) throw error;
+    return data.user?.id;
+  }
+
+
+  async getUserId(email: string) {
+    const { data, error } = await this.clientService.client
+      .from('auth_users')
+      .select('id')
+      .eq('email', email)
+      .single();
+    if (error) throw error;
+    return data?.id;
+  }
 
 
 }
