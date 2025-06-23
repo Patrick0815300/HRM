@@ -33,7 +33,7 @@ import { ToastModule } from 'primeng/toast';
 })
 export class EmployeesManagementComponent implements OnInit {
   employees!: Employee[];
-  role: string = 'admin';
+  role: string = '';
   columns: Table[] = [];
   visibleAddEmployeeDialog: boolean = false;
   statusOptions!: { label: string; value: EmployeeStatus }[];
@@ -41,6 +41,7 @@ export class EmployeesManagementComponent implements OnInit {
   employmentType!: { label: string; value: EmploymentType }[];
   now = new Date().toISOString();
   privateEmail: string = '';
+
 
   employee: Employee = {
     firstName: '',
@@ -73,12 +74,11 @@ export class EmployeesManagementComponent implements OnInit {
     { field: 'actions', header: '', width: '56px', sortable: false }   // View / Edit / Delete
   ];
 
-
-
   constructor(public router: Router, private employeesService: EmployeesService, private messageService: MessageService) { }
 
   async ngOnInit(): Promise<void> {
     this.employees = await this.employeesService.getAllEmployeesData();
+    this.role = await this.employeesService.getEmployeesRoleByUserId();
     this.columns = this.allColumns.filter(
       col => !col.roles || col.roles.includes(this.role)
     );
@@ -102,9 +102,11 @@ export class EmployeesManagementComponent implements OnInit {
     ];
   }
 
-  getSession() {
-    this.employeesService.getSession();
-  }
+  // getUser() {
+  //   this.employeesService.getEmployeeDataByUserId().then(data => {
+  //     console.log(data);
+  //   })
+  // }
 
   addUser(email: string, employee: Employee) {
     this.employeesService.addUser(email, employee);

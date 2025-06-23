@@ -27,7 +27,6 @@ export type SalaryBand = 'A' | 'B' | 'C' | 'D';
 export enum EmployeeRole {
     HRManager = 'hr_manager',
     Employee = 'employee',
-    Accounting = 'accounting',
     SystemAdmin = 'admin'
 }
 

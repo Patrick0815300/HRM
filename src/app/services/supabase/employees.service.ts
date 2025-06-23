@@ -10,11 +10,21 @@ import { Employee } from '../../shared/models/employee.model';
 })
 export class EmployeesService {
 
+
   constructor(private clientService: ClientService) {
   }
 
+  async signInAnonymously() {
+    const { data, error } = await this.clientService.signInAnonymously();
+    if (error) {
+      console.error('Fehler beim anonymen Login:', error);
+    } else {
+      console.log('Anonymer User angemeldet:', data.user);
+    }
+  }
+
   getSession() {
-    this.clientService.currentUser();
+    return this.clientService.getCurrentUser();
   }
 
   async getAllEmployeesData(): Promise<Employee[]> {
@@ -33,6 +43,28 @@ export class EmployeesService {
       .single()
     if (error) throw error;
     return camelcaseKeys(data!, { deep: true }) as Employee;
+  }
+
+  async getEmployeeDataByUserId() {
+    const id = await this.clientService.getCurrentUserId();
+    const { data, error } = await this.clientService.client
+      .from('employees')
+      .select('*')
+      .eq('user_id', id)
+      .single()
+    if (error) throw error;
+    return data;
+  }
+
+  async getEmployeesRoleByUserId() {
+    const id = await this.clientService.getCurrentUserId();
+    const { data, error } = await this.clientService.client
+      .from('employees')
+      .select('role')
+      .eq('user_id', id)
+      .single()
+    if (error) throw error;
+    return data.role;
   }
 
   async saveEmployee(changes: Partial<Employee>, employeeId: string) {
@@ -97,6 +129,8 @@ export class EmployeesService {
     if (error) throw error;
     return data?.id;
   }
+
+
 
 
 }

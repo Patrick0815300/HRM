@@ -2,7 +2,7 @@
   <p-toast></p-toast>
   <div>
     <p-button (click)="showDialog()" label="Mitarbeiter hinzufügen" />
-    <p-button (onClick)="getSession()"></p-button>
+    <!-- <p-button (click)="getUserRole()">User</p-button> -->
     <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleAddEmployeeDialog" [style]="{ width: '25rem' }">
       <span class="p-text-secondary block mb-8">Mitarbeiter hinzufügen</span>
       <p-floatlabel variant="on" class="flex items-center gap-4 mb-4">

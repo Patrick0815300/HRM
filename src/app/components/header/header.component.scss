@@ -13,6 +13,10 @@
 }
 
 .user {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
     img {
         border-radius: 99999px;
         width: 60px;
