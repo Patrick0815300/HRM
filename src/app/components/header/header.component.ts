@@ -5,6 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { ClientService } from '../../services/supabase/client.service';
 import { Router, RouterLink } from '@angular/router';
+import { EmployeesService } from '../../services/supabase/employees.service';
 
 @Component({
   selector: 'app-header',
@@ -21,18 +22,33 @@ export class HeaderComponent {
   lastName: string = '';
   firstName: string = '';
 
-  constructor(private clientService: ClientService, private router: Router) {
+  constructor(private clientService: ClientService, private employeeService: EmployeesService, private router: Router) {
     this.getUser();
   }
 
+  /**
+   * Fetches and sets the current user's first and last name.
+   *
+   * Retrieves the employee data for the currently authenticated user and assigns
+   * the first and last name to the corresponding class properties.
+   *
+   * @returns {void}
+   */
   getUser() {
-    this.clientService.getEmployeeDataByUserId().then(data => {
+    this.employeeService.getEmployeeDataByUserId().then(data => {
       this.firstName = data.first_name;
       this.lastName = data.last_name
-
     })
   }
 
+  /**
+   * Signs out the current user and navigates to the home page.
+   *
+   * Calls the sign-out method from the authentication service and redirects the user
+   * to the root route.
+   *
+   * @returns {void}
+   */
   signOut() {
     this.clientService.signOut();
     this.router.navigate(['']);
