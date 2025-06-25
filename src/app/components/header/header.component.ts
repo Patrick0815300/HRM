@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ClientService } from '../../services/supabase/client.service';
 import { Router, RouterLink } from '@angular/router';
 import { EmployeesService } from '../../services/supabase/employees.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,7 @@ import { EmployeesService } from '../../services/supabase/employees.service';
     IconField,
     InputTextModule,
     FormsModule,
+    ButtonModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'

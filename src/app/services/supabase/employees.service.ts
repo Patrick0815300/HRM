@@ -130,10 +130,54 @@ export class EmployeesService {
     return data;
   }
 
-  uploadEmployeeAvatar(employeeId: string, fileName: string, file: File) {
-    const filePath = `${employeeId}/${fileName}`;
-    return this.clientService.client.storage.from('employees-avatar').upload(filePath, file);
+
+  async uploadEmployeeAvatar(employeeId: string, fileName: string, file: File): Promise<string | null> {
+    try {
+      // 1. Datei in Storage hochladen
+      const { data: uploadData, error: uploadError } = await this.clientService.client.storage
+        .from('employees-avatar')
+        .upload(`${employeeId}/${fileName}`, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 2. Pfad in Datenbank speichern
+      const avatarPath = uploadData.path;
+      const { error: updateError } = await this.clientService.client
+        .from('employees')
+        .update({ avatar_path: avatarPath })
+        .eq('id', employeeId);
+
+      if (updateError) throw updateError;
+
+      return avatarPath;
+    } catch (error) {
+      console.error('Avatar-Upload fehlgeschlagen:', error);
+      return null;
+    }
   }
+
+  async getAvatarUrl(avatarPath: string): Promise<string | null> {
+    const { data, error } = await this.clientService.client.storage
+      .from('employees-avatar')
+      .createSignedUrl(avatarPath, 60 * 60); // 1 Stunde gültig
+
+    if (error) {
+      console.error('Fehler beim Erstellen der signierten URL:', error);
+      return null;
+    }
+    return data.signedUrl;
+  }
+
+
+
+
+
+
+
+
 
   async createUserAndEmployee(email: string, employee: Employee) {
     const userId = await this.addUser(email, employee);

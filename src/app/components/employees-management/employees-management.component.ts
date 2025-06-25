@@ -41,7 +41,7 @@ export class EmployeesManagementComponent implements OnInit {
   employmentType!: { label: string; value: EmploymentType }[];
   now = new Date().toISOString();
   privateEmail: string = '';
-
+  avatarUrl?: string;
 
   employee: Employee = {
     firstName: '',
@@ -58,19 +58,19 @@ export class EmployeesManagementComponent implements OnInit {
   };
 
   private readonly allColumns: Table[] = [
-    { field: 'avatarUrl', header: 'Avatar', width: '64px', sortable: false },
+    { field: 'avatarPath', header: 'Avatar', width: '64px', sortable: false },
     { field: 'lastName', header: 'Name', sortable: true },
     { field: 'jobTitle', header: 'Job', sortable: false },
-    { field: 'departmentName', header: 'Team', sortable: false },
+    { field: 'departmentName', header: 'Team', sortable: true },
     { field: 'workEmail', header: 'Mail', roles: ['hr_manager', 'manager', 'admin'], sortable: false },
     { field: 'status', header: 'Status', sortable: true },
-    { field: 'startDate', header: 'Start', sortable: false },
+    { field: 'startDate', header: 'Start', sortable: true },
     { field: 'contractType', header: 'Vertragstyp', roles: ['hr_manager', 'admin'], sortable: false },
-    { field: 'weeklyHours', header: 'h/Woche', roles: ['hr_manager', 'admin'], sortable: false },
-    { field: 'salaryBand', header: 'Band', roles: ['hr_manager', 'admin'], sortable: false },
-    { field: 'remainingPto', header: 'rest EU', roles: ['hr_manager', 'manager'], sortable: false },
-    { field: 'phone', header: 'Phone', roles: ['manager'], sortable: false },
-    { field: 'nextReviewDate', header: 'next Review', roles: ['manager'], sortable: false },
+    { field: 'weeklyHours', header: 'h/Woche', roles: ['hr_manager', 'admin'], sortable: true },
+    { field: 'salaryBand', header: 'Band', roles: ['hr_manager', 'admin'], sortable: true },
+    { field: 'remainingPto', header: 'rest EU', roles: ['hr_manager', 'manager', 'admin'], sortable: false },
+    { field: 'phone', header: 'Phone', roles: ['manager', 'admin'], sortable: false },
+    { field: 'nextReviewDate', header: 'next Review', roles: ['manager', 'admin'], sortable: false },
     { field: 'actions', header: '', width: '56px', sortable: false }   // View / Edit / Delete
   ];
 
@@ -82,6 +82,8 @@ export class EmployeesManagementComponent implements OnInit {
     this.columns = this.allColumns.filter(
       col => !col.roles || col.roles.includes(this.role)
     );
+    //this.getAvatarUrl();
+    console.log(this.employee.avatarPath);
 
     this.statusOptions = [
       { label: 'Active', value: 'active' },
@@ -118,7 +120,6 @@ export class EmployeesManagementComponent implements OnInit {
 
   async onSaveEmployee() {
     this.employee.workEmail = this.generateWorkEmail(this.employee.firstName, this.employee.lastName);
-
     try {
       await this.employeesService.createUserAndEmployee(this.privateEmail, this.employee);
       this.messageService.add({
@@ -134,7 +135,6 @@ export class EmployeesManagementComponent implements OnInit {
       });
     }
   }
-
 
   generateWorkEmail(firstName: string, lastName: string): string {
     const clean = (str: string) =>
@@ -166,6 +166,10 @@ export class EmployeesManagementComponent implements OnInit {
     }
   }
 
-
+  getAvatarUrl() {
+    const url = this.employeesService.getAvatarUrl(this.employee.avatarPath!).then(data => {
+      this.avatarUrl = data!;
+    })
+  }
 
 }

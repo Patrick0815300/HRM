@@ -1,9 +1,9 @@
 <div class="container">
     <ng-container *ngIf="employee; else loading">
         <div class="employee-header">
-          <ng-container *ngIf="employee.avatarUrl; else defaultAvatar">
+          <ng-container *ngIf="employee.avatarPath; else defaultAvatar">
             <img
-              [src]="employee.avatarUrl"
+              [src]="avatarUrl"
               alt="Avatar von {{ employee.firstName }}"
               class="avatar"
             />

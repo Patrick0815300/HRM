@@ -156,30 +156,14 @@ export class ProfileComponent implements OnInit {
   onUpload(event: any, fileUpload: FileUpload) {
     if (this.employee.id) {
       for (let file of event.files) {
-        this.employeeService.uploadEmployeeAvatar(this.employee.id, file.name, file).then(({ error }) => {
-          console.log(this.employee.id, file.name, file);
-
-          if (error) {
-            this.messageService.add({
-              key: 'upload',
-              severity: 'error',
-              summary: 'Fehler beim Hochladen',
-              detail: error.message
-            });
-          } else {
-            this.messageService.add({
-              key: 'upload',
-              severity: 'info',
-              summary: 'Upload erfolgreich',
-              detail: `${file.name} hochgeladen`
-            });
-          }
-        });
+        const cleanFileName = file.name
+          .replace(/\s+/g, '_')       // Leerzeichen durch _ ersetzen
+          .replace(/[()]/g, '')       // Klammern entfernen
+          .replace(/[^a-z0-9_.-]/gi, ''); // Alle unerwünschten Zeichen entfernen
+        this.employeeService.uploadEmployeeAvatar(this.employee.id, cleanFileName, file)
       }
-      event.options.clear();
     }
   }
-
 
   showSaveSuccessToast() {
     this.messageService.add({

@@ -74,7 +74,7 @@ export interface Employee {
     nextReviewDate?: string;        // planned performance review
 
     /* ─── Media & misc. ───────────────────── */
-    avatarUrl?: string;             // Supabase Storage path
+    avatarPath?: string;             // Supabase Storage path
     customAttributes?: Record<string, unknown>; // JSONB for extra fields
 
     /* ─── Audit ───────────────────────────── */

@@ -24,6 +24,7 @@ export class EmpoyeesPageComponent implements OnInit {
   employee!: Employee;
   id: string = '';
   role: string = 'admin';
+  avatarUrl?: string;
 
   tabs: { title: string; value: number; content: string }[] = [];
   selectedTab: number = 0;
@@ -33,8 +34,13 @@ export class EmpoyeesPageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.id = this.route.snapshot.paramMap.get('id')!;
     this.employee = await this.emploeesService.getEmployeesDataById(this.id);
+    this.getAvatarUrl();
   }
 
-
+  getAvatarUrl() {
+    const url = this.emploeesService.getAvatarUrl(this.employee.avatarPath!).then(data => {
+      this.avatarUrl = data!;
+    })
+  }
 
 }

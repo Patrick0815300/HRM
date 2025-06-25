@@ -2,6 +2,7 @@
   <p-toast></p-toast>
   <div>
     <p-button (click)="showDialog()" label="Mitarbeiter hinzufügen" />
+    <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Suchbegriff" />
     <!-- <p-button (click)="getUserRole()">User</p-button> -->
     <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visibleAddEmployeeDialog" [style]="{ width: '25rem' }">
       <span class="p-text-secondary block mb-8">Mitarbeiter hinzufügen</span>
@@ -73,16 +74,15 @@
     </p-dialog>
   </div>
     <div class="employees">
-      <p-table
+      <p-table #dt
         [value]="employees"
-        [paginator]="true"
-        [rows]="10"
         [tableStyle]="{ 'min-width': '50rem' }"
-        [rowsPerPageOptions]="[10, 25, 50]"
-        scrollable="true"
+        [scrollable]="true"
+        scrollHeight="100%"
         stripedRows
         sortField="lastName"
         [sortOrder]="1"
+        [globalFilterFields]="['lastName', 'firstName']"
       >
         <!-- Header -->
         <ng-template pTemplate="header">
@@ -113,9 +113,9 @@
   
                   <!-- Avatar -->
                   <ng-container *ngSwitchCase="'avatarUrl'">
-                    <ng-container *ngIf="employees.avatarUrl; else defaultAvatar">
+                    <ng-container *ngIf="employees.avatarPath; else defaultAvatar">
                       <img
-                        [src]="employees.avatarUrl"
+                        [src]="avatarUrl"
                         alt="Avatar von {{ employees.firstName }}"
                         class="avatar"
                       />
@@ -152,9 +152,9 @@
                   </span>
 
                   <button *ngIf="col.field==='actions'" pButton type="button" icon="pi pi-eye"
-                  class="p-button-text p-button-sm"
-                  (click)="router.navigate(['/employeesPage', employees.id]); $event.stopPropagation()"
-                  pTooltip="Details"></button>
+                    class="p-button-text p-button-sm"
+                    (click)="router.navigate(['/employeesPage', employees.id]); $event.stopPropagation()"
+                    pTooltip="Details"></button>
   
                   <!-- Standard -->
                   <span *ngSwitchDefault>
