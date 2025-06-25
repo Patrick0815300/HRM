@@ -23,6 +23,8 @@ import { ButtonModule } from 'primeng/button';
 export class HeaderComponent {
   lastName: string = '';
   firstName: string = '';
+  avatarPath?: string | null;
+  avatarUrl?: string | null;
 
   constructor(private clientService: ClientService, private employeeService: EmployeesService, private router: Router) {
     this.getUser();
@@ -36,11 +38,13 @@ export class HeaderComponent {
    *
    * @returns {void}
    */
-  getUser() {
-    this.employeeService.getEmployeeDataByUserId().then(data => {
+  async getUser() {
+    await this.employeeService.getEmployeeDataByUserId().then(data => {
       this.firstName = data.first_name;
-      this.lastName = data.last_name
-    })
+      this.lastName = data.last_name;
+      this.avatarPath = data.avatar_path;
+    });
+    this.getAvatarUrl();
   }
 
   /**
@@ -56,4 +60,13 @@ export class HeaderComponent {
     this.router.navigate(['']);
   }
 
+
+  async getAvatarUrl() {
+    if (this.avatarPath) {
+      const url = await this.employeeService.getAvatarUrl(this.avatarPath).then(data => {
+        console.log('data: ' + data);
+        this.avatarUrl = data;
+      })
+    } else { console.log('kein avatarPath vorhanden.'); }
+  }
 }
