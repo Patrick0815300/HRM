@@ -75,6 +75,7 @@ export interface Employee {
 
     /* ─── Media & misc. ───────────────────── */
     avatarPath?: string;             // Supabase Storage path
+    avatarUrl?: string
     customAttributes?: Record<string, unknown>; // JSONB for extra fields
 
     /* ─── Audit ───────────────────────────── */

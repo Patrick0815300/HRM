@@ -41,7 +41,7 @@ export class EmployeesManagementComponent implements OnInit {
   employmentType!: { label: string; value: EmploymentType }[];
   now = new Date().toISOString();
   privateEmail: string = '';
-  avatarUrl?: string;
+  avatarUrl?: string | any;
 
   employee: Employee = {
     firstName: '',
@@ -82,8 +82,7 @@ export class EmployeesManagementComponent implements OnInit {
     this.columns = this.allColumns.filter(
       col => !col.roles || col.roles.includes(this.role)
     );
-    //this.getAvatarUrl();
-    console.log(this.employee.avatarPath);
+    this.getAvatarUrl();
 
     this.statusOptions = [
       { label: 'Active', value: 'active' },
@@ -166,9 +165,13 @@ export class EmployeesManagementComponent implements OnInit {
     }
   }
 
-  getAvatarUrl() {
-    const url = this.employeesService.getAvatarUrl(this.employee.avatarPath!).then(data => {
-      this.avatarUrl = data!;
+  async getAvatarUrl() {
+    const url = await this.employees.map(employee => {
+      if (employee.avatarPath) {
+        this.employeesService.getAvatarUrl(employee.avatarPath).then(data => {
+          employee.avatarUrl = data !== null ? data : undefined;
+        })
+      }
     })
   }
 

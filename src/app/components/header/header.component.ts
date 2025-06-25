@@ -64,7 +64,6 @@ export class HeaderComponent {
   async getAvatarUrl() {
     if (this.avatarPath) {
       const url = await this.employeeService.getAvatarUrl(this.avatarPath).then(data => {
-        console.log('data: ' + data);
         this.avatarUrl = data;
       })
     } else { console.log('kein avatarPath vorhanden.'); }
