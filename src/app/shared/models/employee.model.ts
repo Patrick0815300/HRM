@@ -84,5 +84,6 @@ export interface Employee {
 
     /* ─── Role & Permissions ──────────────── */
     role: EmployeeRole; //
+    profileId?: string
 }
 

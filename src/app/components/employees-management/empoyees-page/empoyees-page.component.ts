@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EmployeesService } from '../../../services/supabase/employees.service';
 import { Employee } from '../../../shared/models/employee.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TabsModule } from 'primeng/tabs';
 import { ProfileComponent } from './tabs/profile/profile.component';
 import { CommonModule } from '@angular/common';
@@ -31,18 +31,31 @@ import { ToastModule } from 'primeng/toast';
 export class EmpoyeesPageComponent implements OnInit {
   employee!: Employee;
   id: string = '';
-  role: string = 'admin';
   avatarUrl?: string;
+  role?: string;
 
   tabs: { title: string; value: number; content: string }[] = [];
   selectedTab: number = 0;
 
-  constructor(private emploeesService: EmployeesService, private route: ActivatedRoute, private confirmationService: ConfirmationService, private messageService: MessageService) { }
+  constructor(private emploeesService: EmployeesService, private route: ActivatedRoute, private confirmationService: ConfirmationService, private messageService: MessageService, private router: Router) { }
 
   async ngOnInit(): Promise<void> {
     this.id = this.route.snapshot.paramMap.get('id')!;
     this.employee = await this.emploeesService.getEmployeesDataById(this.id);
     this.getAvatarUrl();
+    this.getUserRole();
+  }
+
+  getUserRole() {
+    const getRole = this.emploeesService.getEmployeesRoleByUserId().then(data => {
+      this.role = data;
+    });
+  }
+
+  isEmployeeRole(): boolean {
+    const isEmployee = this.role === 'employee';
+    const isHrOrAdmin = this.role === 'hr_manager' || 'admin'
+    return !this.employee && isHrOrAdmin;
   }
 
   async getAvatarUrl() {
@@ -71,10 +84,25 @@ export class EmpoyeesPageComponent implements OnInit {
       },
 
       accept: () => {
-        this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' });
-
+        this.messageService.add({
+          severity: 'info', summary: 'Confirmed', detail: this.employee
+            .firstName + ' ' + this.employee.lastName + ' wurde erfolgreich gelöscht', life: 2000
+        });
+        setTimeout(() => {
+          this.router.navigate(['/employeesManagement']);
+        }, 2000);
       },
     });
+  }
+
+  deleteEmployee() {
+    console.log(this.employee.id);
+
+    if (this.employee.id) {
+      this.emploeesService.deleteEmployee(this.employee.id);
+    } else {
+      console.log('Employee konnte nicht gelöscht werden.');
+    }
   }
 
 

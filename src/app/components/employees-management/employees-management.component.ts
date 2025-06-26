@@ -109,8 +109,8 @@ export class EmployeesManagementComponent implements OnInit {
   //   })
   // }
 
-  addUser(email: string, employee: Employee) {
-    this.employeesService.addUser(email, employee);
+  test() {
+    this.employeesService.getID();
   }
 
   onStartDateChange(date: Date) {
@@ -120,7 +120,7 @@ export class EmployeesManagementComponent implements OnInit {
   async onSaveEmployee() {
     this.employee.workEmail = this.generateWorkEmail(this.employee.firstName, this.employee.lastName);
     try {
-      await this.employeesService.createUserAndEmployee(this.privateEmail, this.employee);
+      await this.employeesService.createEmployeeWithUser(this.employee, this.privateEmail,);
       this.messageService.add({
         severity: 'success',
         summary: 'Erfolg',
