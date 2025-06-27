@@ -88,6 +88,7 @@ export class EmpoyeesPageComponent implements OnInit {
           severity: 'info', summary: 'Confirmed', detail: this.employee
             .firstName + ' ' + this.employee.lastName + ' wurde erfolgreich gelöscht', life: 2000
         });
+        this.deleteEmployee();
         setTimeout(() => {
           this.router.navigate(['/employeesManagement']);
         }, 2000);
@@ -95,16 +96,11 @@ export class EmpoyeesPageComponent implements OnInit {
     });
   }
 
-  deleteEmployee() {
-    console.log(this.employee.id);
-
-    if (this.employee.id) {
-      this.emploeesService.deleteEmployee(this.employee.id);
+  async deleteEmployee() {
+    if (this.employee.userId && this.employee.id) {
+      await this.emploeesService.deleteEmployee(this.employee.userId, this.employee.id);
     } else {
       console.log('Employee konnte nicht gelöscht werden.');
     }
   }
-
-
-
 }

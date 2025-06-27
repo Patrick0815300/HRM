@@ -9,7 +9,8 @@ import { Employee } from '../../shared/models/employee.model';
   providedIn: 'root'
 })
 export class EmployeesService {
-
+  userId?: string;
+  profileId?: string;
 
   constructor(private clientService: ClientService) {
   }
@@ -137,9 +138,23 @@ export class EmployeesService {
   // ---------------------------------------------- ADD, SAVE, UPDATE EMPLOYEE and USER ----------------------------------------------
 
   async createEmployeeWithUser(employee: Employee, email: string): Promise<string> {
-    const password = 'Password123';
+    try {
+      const userId = await this.createUser(employee, email);
+      const profileId = await this.createProfile(employee, userId);
+      const employeeSnakeCase = this.toSnakeCase({
+        ...employee,
+        user_id: userId,
+        profile_id: profileId
+      });
+      return await this.createEmployee(employeeSnakeCase);
+    } catch (error) {
+      console.error('Fehler beim Erstellen des Mitarbeiters:', error);
+      throw error;
+    }
+  }
 
-    // 1. User erstellen
+  async createUser(employee: Employee, email: string): Promise<string> {
+    const password = 'Password123';
     const { data: user, error: authError } = await this.clientService.client.auth.signUp({
       email,
       password,
@@ -151,28 +166,27 @@ export class EmployeesService {
       }
     });
     if (authError) throw authError;
+    if (!user?.user?.id) throw new Error("User creation failed: No ID returned");
+    return user.user.id;
+  }
 
-    // 2. Profile erstellen UND DIE ID ABRUFEN
+  async createProfile(employee: Employee, userId: string): Promise<string> {
     const { data: profileData, error: profileError } = await this.clientService.client
       .from('profiles')
       .insert({
-        user_id: user.user?.id,
+        user_id: userId,
         role: 'employee',
         first_name: employee.firstName,
         last_name: employee.lastName
       })
-      .select('id') // WICHTIG: ID des neuen Profils abrufen
+      .select('id')
       .single();
 
     if (profileError) throw profileError;
+    return profileData.id
+  }
 
-    // 3. Employee mit der PROFIL-ID erstellen
-    const employeeSnakeCase = this.toSnakeCase({
-      ...employee,
-      user_id: user.user?.id,
-      profile_id: profileData.id // Korrekte Profil-ID verwenden
-    });
-
+  async createEmployee(employeeSnakeCase: Employee) {
     const { data: employeeData, error: employeeError } = await this.clientService.client
       .from('employees')
       .insert(employeeSnakeCase)
@@ -182,10 +196,6 @@ export class EmployeesService {
     if (employeeError) throw employeeError;
     return employeeData.id;
   }
-
-
-
-
 
   async saveEmployee(changes: Partial<Employee>, employeeId: string) {
     // keys in snake_case umwandeln
@@ -200,6 +210,40 @@ export class EmployeesService {
     return data;
   }
 
+  async deleteEmployee(userId: string, employeeId: string): Promise<boolean> {
+    try {
+      //Storage Dateien Löschen - Avatar
+      await this.deleteEmployeeStorage(employeeId);
+
+      // Profile Löschen
+      await this.deleteProfile(userId);
+
+      // User löschen
+      const { error: userError } = await this.clientService.client.auth.admin.deleteUser(userId);
+      if (userError) throw userError;
+
+      return true
+    } catch (error) {
+      console.error('Löschen fehlgeschlagen:', error);
+      throw new Error('Employee konnte nicht gelöscht werden: ' + error);
+    }
+  }
+
+  async deleteEmployeeStorage(employeeId: string) {
+    const { error } = await this.clientService.client
+      .storage
+      .from('employees-avatar')
+      .remove([employeeId]);
+    if (error) throw error
+  }
+
+  async deleteProfile(userId: string) {
+    const { data, error } = await this.clientService.client
+      .from('profiles')
+      .delete()
+      .eq('user_id', userId);
+    if (error) throw error;
+  }
 
   async uploadEmployeeAvatar(employeeId: string, fileName: string, file: File): Promise<string | null> {
     try {
@@ -240,41 +284,6 @@ export class EmployeesService {
     }
     return data.signedUrl;
   }
-
-
-
-  async deleteEmployee(employeeId: string): Promise<boolean> {
-    try {
-      // 1. Zuerst zugehörigen User löschen
-      const userDeleteResult = await this.clientService.client
-        .from('employees')
-        .select('user_id')
-        .eq('id', employeeId)
-        .single();
-
-      if (userDeleteResult.error) throw userDeleteResult.error;
-
-      const userId = userDeleteResult.data.user_id;
-
-      // 2. User aus Auth-Tabelle löschen
-      const { error: authError } = await this.clientService.client.auth.admin.deleteUser(userId);
-      if (authError) throw authError;
-
-      // 3. Employee-Datensatz löschen
-      const { error: employeeError } = await this.clientService.client
-        .from('employees')
-        .delete()
-        .eq('id', employeeId);
-
-      if (employeeError) throw employeeError;
-
-      return true; // Erfolg
-    } catch (error) {
-      console.error('Löschen fehlgeschlagen:', error);
-      throw new Error('Employee konnte nicht gelöscht werden: ' + error);
-    }
-  }
-
 
   async getUserId(email: string) {
     const { data, error } = await this.clientService.client
