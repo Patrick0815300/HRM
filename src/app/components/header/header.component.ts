@@ -11,8 +11,8 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-header',
   imports: [
-    InputIcon,
-    IconField,
+    //InputIcon,
+    //IconField,
     InputTextModule,
     FormsModule,
     ButtonModule
