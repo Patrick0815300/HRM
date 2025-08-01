@@ -43,3 +43,5 @@ Thumbs.db
 
 # Supabase 
 /src/app/services/supabase/client.service.ts
+
+/src/enviroments
